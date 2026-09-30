@@ -1,0 +1,19 @@
+name: budgeting-tests
+
+services:
+  test-database:
+    image: mysql:9.6
+    environment:
+      MYSQL_DATABASE: budgeting_test
+      MYSQL_ROOT_PASSWORD: test_root_password
+      MYSQL_USER: budgeting_test
+      MYSQL_PASSWORD: test_password
+    ports:
+      - "3306"
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-ubudgeting_test", "-ptest_password" ]
+      interval: 2s
+      timeout: 5s
+      retries: 15
