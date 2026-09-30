@@ -1,10 +1,23 @@
 # Smart Budget API — Spring Boot + Spring AI
 
+[![CI](https://github.com/gcipolla1402/smart-budget-spring-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/gcipolla1402/smart-budget-spring-ai/actions/workflows/ci.yml)
+![Java 25](https://img.shields.io/badge/Java-25-ED8B00?logo=openjdk&logoColor=white)
+![Spring Boot 4](https://img.shields.io/badge/Spring_Boot-4-6DB33F?logo=springboot&logoColor=white)
+![Spring AI](https://img.shields.io/badge/Spring_AI-2.0.0--M4-6DB33F?logo=spring&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-9-4479A1?logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+
 API financeira inteligente desenvolvida como evolução do desafio final do **Bootcamp Itaú — Java com Inteligência Artificial**, da [Digital Innovation One (DIO)](https://www.dio.me/).
 
 A aplicação recebe comandos de voz, transcreve o áudio, interpreta a intenção com um LLM e usa Tool Calling para executar regras reais da aplicação. As despesas são persistidas e consultadas no MySQL, enquanto a resposta pode ser devolvida em JSON ou, opcionalmente, sintetizada em áudio MP3.
 
 > Projeto-base: [digitalinnovationone/dio-spring-boot-learning-track — 05-spring-ai](https://github.com/digitalinnovationone/dio-spring-boot-learning-track/tree/main/05-spring-ai)
+
+## Demonstração validada
+
+O fluxo real foi validado de ponta a ponta: `áudio → Speech-to-Text → LLM → Tool Calling → Use Case → MySQL → resposta textual/TTS`.
+
+A validação também confirmou a idempotência em uma repetição real da operação, reutilizando a transação já persistida e evitando duplicidade.
 
 ## Principais diferenciais
 
@@ -35,6 +48,15 @@ O projeto preserva a separação entre domínio, aplicação e infraestrutura.
 As regras financeiras ficam nos use cases. As Tools adaptam os argumentos escolhidos pelo modelo e delegam a execução para essa camada. O LLM interpreta linguagem natural, mas não soma valores, calcula diferenças ou percentuais e não implementa regras de persistência.
 
 Valores monetários são armazenados como `long` em centavos. Datas usam `LocalDate`, e expressões relativas recebem como referência um `Clock` configurado para `America/Sao_Paulo`.
+
+## Decisões de engenharia
+
+- As regras e os cálculos financeiros são determinísticos e executados em Java.
+- O LLM interpreta a intenção do usuário e escolhe as Tools, que delegam a execução aos use cases.
+- A idempotência persistente evita transações duplicadas em retries.
+- A auditoria registra metadados técnicos sem persistir conteúdo financeiro sensível.
+- Os testes que acessam a OpenAI ficam separados da suíte normal.
+- O CI executa testes e build sem consumir créditos da OpenAI.
 
 ## Diagrama
 
